@@ -1,4 +1,5 @@
-import { redirect, useLoaderData } from "@remix-run/react";
+import { Form, redirect, useLoaderData } from "@remix-run/react";
+import { Button } from "~/components/ui/button";
 import { findUser, User } from "~/data/users";
 
 type Props = {};
@@ -17,7 +18,7 @@ export function loader({ params }: { params: { id: string } }) {
      * only in server
      * like actions, loaders can return a redirect response
      */
-    return redirect("/not-found");
+    return redirect("/");
   }
   return new Response(JSON.stringify(user), {
     headers: {
@@ -30,6 +31,12 @@ function Profile({}: Props) {
   // data comes from the loader functions
   const user = useLoaderData<User>();
 
+  const handleClientSideLogout = (action: string) => {
+    if (action === "logout" || action === "delete") {
+      localStorage.removeItem("user");
+    }
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100">
       <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
@@ -39,6 +46,18 @@ function Profile({}: Props) {
         <p className="text-gray-600 mt-2">Email: {user.email} </p>
         <div className="mt-6 flex space-x-4">
           {/* information for logout, delete etc  */}
+          <Form method="post" onSubmit={() => handleClientSideLogout("logout")}>
+            <input type="hidden" name="action" value="logout" />
+            <Button type="submit" variant={"secondary"}>
+              Logout
+            </Button>
+          </Form>
+          <Form method="post" onSubmit={() => handleClientSideLogout("delete")}>
+            <input type="hidden" name="action" value="delete" />
+            <Button type="submit" variant={"destructive"}>
+              Delete Account
+            </Button>
+          </Form>
         </div>
       </div>
     </div>
