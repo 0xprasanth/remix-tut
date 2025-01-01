@@ -27,6 +27,23 @@ export function loader({ params }: { params: { id: string } }) {
   });
 }
 
+export async function action({
+  params,
+  request,
+}: {
+  params: { id: string };
+  request: Request;
+}) {
+  const formData = await request.formData();
+  const actionType = formData.get("action");
+  if (actionType === "logout") {
+    return redirect("/");
+  }
+  if (actionType === "delete") {
+    return redirect("/");
+  }
+}
+
 function Profile({}: Props) {
   // data comes from the loader functions
   const user = useLoaderData<User>();
